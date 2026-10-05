@@ -1,62 +1,148 @@
-body {
-  background-color: #000000 !important;
-  color: #ffffff;
+body.game-page {
   min-height: 100vh;
+  background: #000 !important;
+  color: #fff;
 }
 
-/* Inputs con fondo oscuro */
 .form-floating > .form-control {
-  background-color: #1a1a24 !important;
-  color: #ffffff !important;
+  background: #1a1a24 !important;
+  color: #fff !important;
 }
+.form-floating > .form-control:focus { background: #222232 !important; color: #fff !important; }
 
-.form-floating > .form-control:focus {
-  background-color: #222232 !important;
-  color: #ffffff !important;
-}
-
-/* Cursor e interacción en las imágenes de selección de personajes */
-#py1 .row img, #py2 .row img {
+.fighter-roster img {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+.fighter-roster img:hover { transform: scale(1.06); box-shadow: 0 0 12px rgba(255, 193, 7, 0.6); }
+.fighter-roster img.bg-warning { box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.55); }
 
-#py1 .row img:hover, #py2 .row img:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 14px rgba(255, 193, 7, 0.85);
+.fighter-stage { min-height: 244px; }
+.fighter-portrait {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 230px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #d8795f;
 }
-
-/* Vista previa del personaje completo */
+.fighter-portrait-two { background: #327fae; }
 .character-full-preview {
-  max-height: 250px;
-  height: auto;
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  max-height: 230px;
   object-fit: contain;
-  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.25));
-  animation: previewFadeIn 0.3s ease-in-out;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.22));
+  animation: previewFadeIn 0.25s ease-out;
 }
+.character-full-preview.power-up { animation: powerUp 0.65s ease-out; filter: drop-shadow(0 0 15px rgba(255, 220, 90, 0.8)); }
+.fighter-name,
+.form-caption {
+  position: absolute;
+  z-index: 2;
+  bottom: 7px;
+  padding: 4px 7px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-weight: 700;
+}
+.fighter-name { left: 7px; }
+.form-caption { right: 7px; max-width: 52%; font-size: 0.62rem; text-align: right; }
 
-@keyframes previewFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
+.fighter-stats .progress { height: 18px; }
+.fighter-stats .progress-bar { line-height: 18px; }
 
 .battle-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
 }
 .battle-actions .btn {
+  display: flex;
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 0;
   min-height: 48px;
-  font-weight: 600;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 4px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: #202a31;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
 }
-.battle-actions .btn:focus-visible {
-  outline: 3px solid white;
-  outline-offset: 3px;
-}
+.battle-actions .btn i { flex: 0 0 auto; font-size: 0.8rem; }
+.battle-actions .btn span { min-width: 0; overflow-wrap: anywhere; }
+.battle-actions .btn:disabled { opacity: 0.82; cursor: not-allowed; }
+.battle-actions .btn.action-charge,
+.battle-actions .btn.action-charge:disabled { border-color: #a8ccdc !important; background-color: #c9e3ee !important; }
+.battle-actions .btn.action-special,
+.battle-actions .btn.action-special:disabled { border-color: #e2ac98 !important; background-color: #f0c9b9 !important; }
+.battle-actions .btn.action-basic,
+.battle-actions .btn.action-basic:disabled { border-color: #e2ca82 !important; background-color: #f0dfaa !important; }
+.battle-actions .btn.action-heal,
+.battle-actions .btn.action-heal:disabled { border-color: #a9c99f !important; background-color: #cfe2c8 !important; }
+.battle-actions .btn:focus-visible,
+.confirm-button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
 .battle-status { min-height: 2.5em; }
+.confirm-button { min-height: 42px; font-weight: 700; }
+
+.attack-popup {
+  position: fixed;
+  z-index: 20;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  width: min(460px, calc(100vw - 28px));
+  padding: 18px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  background: rgba(12, 14, 19, 0.96);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, -42%) scale(0.88);
+}
+.attack-popup.is-visible { visibility: visible; animation: popupStrike 1650ms ease-out both; }
+.popup-type { color: #ffc65b; font-size: 0.7rem; font-weight: 700; }
+.popup-image { width: 100px; height: 116px; object-fit: contain; }
+.attack-popup strong { margin: 0; font-size: 1.8rem; line-height: 1.05; text-transform: uppercase; overflow-wrap: anywhere; }
+.popup-detail { color: #d5d9dc; font-size: 0.72rem; font-weight: 700; }
+
+@keyframes previewFadeIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+@keyframes powerUp { 0% { transform: scale(0.84); } 60% { transform: scale(1.07); } 100% { transform: scale(1); } }
+@keyframes popupStrike {
+  0% { opacity: 0; transform: translate(-50%, -42%) scale(0.78); }
+  12%, 76% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -54%) scale(1.02); }
+}
+
+@media (max-width: 767.98px) {
+  .fighter-stage { min-height: 224px; }
+  .fighter-portrait { width: min(100%, 210px); }
+  .character-full-preview { max-height: 210px; }
+  .battle-actions { gap: 4px; }
+  .battle-actions .btn { min-height: 50px; padding: 4px 2px; font-size: 0.62rem; }
+  .battle-actions .btn i { font-size: 0.72rem; }
+  .attack-popup { padding: 15px; }
+  .popup-image { width: 82px; height: 94px; }
+  .attack-popup strong { font-size: 1.4rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
